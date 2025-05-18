@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import AsyncMock, Mock, patch
 
 import aiohttp
@@ -73,7 +74,7 @@ async def test_get_hydrometers_success(mock_get, mock_client_session):
 @patch.object(aiohttp.ClientSession, "get")
 async def test_get_hydrometers_timeout(mock_get, mock_client_session):
     """Test that a timeout error is raised."""
-    mock_get.side_effect = TimeoutError("Timeout occurred")
+    mock_get.side_effect = asyncio.TimeoutError("Timeout occurred")
     client = TiltPiClient(
         host=TEST_HOST,
         port=TEST_PORT,

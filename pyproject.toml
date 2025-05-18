@@ -1,6 +1,6 @@
 [tool.poetry]
 packages = [
-  { include = "tilt_pi" }
+  { include = "tiltpi" }
 ]
 
 [project]

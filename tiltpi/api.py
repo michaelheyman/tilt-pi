@@ -1,5 +1,6 @@
 """API client for Tilt Pi."""
 
+import asyncio
 from typing import Final
 
 import aiohttp
@@ -46,7 +47,7 @@ class TiltPiClient:
             ) as resp:
                 resp.raise_for_status()
                 data = await resp.json()
-        except TimeoutError as err:
+        except asyncio.TimeoutError as err:
             raise TiltPiConnectionTimeoutError(
                 f"Timeout while connecting to Tilt Pi at {self._host}"
             ) from err
