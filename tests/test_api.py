@@ -1,7 +1,8 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import aiohttp
 import pytest
+import pytest_asyncio
 
 from tiltpi.api import TiltPiClient, TiltPiConnectionError, TiltPiConnectionTimeoutError
 from tiltpi.model import TiltColor, TiltHydrometerData
@@ -10,9 +11,16 @@ TEST_HOST = "192.1.1.123"
 TEST_PORT = 1880
 
 
+@pytest_asyncio.fixture
+async def mock_client_session():
+    session = aiohttp.ClientSession()
+    yield session
+    await session.close()
+
+
 def make_mock_response(response_data):
     mock_response = AsyncMock()
-    mock_response.raise_for_status.return_value = None
+    mock_response.raise_for_status = Mock(return_value=None)
     mock_response.json.return_value = response_data
 
     context_manager = AsyncMock()
@@ -23,7 +31,7 @@ def make_mock_response(response_data):
 
 @pytest.mark.asyncio
 @patch.object(aiohttp.ClientSession, "get")
-async def test_get_hydrometers_success(mock_get):
+async def test_get_hydrometers_success(mock_get, mock_client_session):
     """Test successful fetch of hydrometer data using a patch decorator."""
     response = [
         {
@@ -42,7 +50,11 @@ async def test_get_hydrometers_success(mock_get):
 
     mock_get.return_value = make_mock_response(response)
 
-    client = TiltPiClient(TEST_HOST, TEST_PORT, aiohttp.ClientSession())
+    client = TiltPiClient(
+        host=TEST_HOST,
+        port=TEST_PORT,
+        session=mock_client_session,
+    )
     result = await client.get_hydrometers()
     assert len(result) == 2
     assert isinstance(result[0], TiltHydrometerData)
@@ -59,19 +71,27 @@ async def test_get_hydrometers_success(mock_get):
 
 @pytest.mark.asyncio
 @patch.object(aiohttp.ClientSession, "get")
-async def test_get_hydrometers_timeout(mock_get):
+async def test_get_hydrometers_timeout(mock_get, mock_client_session):
     """Test that a timeout error is raised."""
     mock_get.side_effect = TimeoutError("Timeout occurred")
-    client = TiltPiClient(TEST_HOST, TEST_PORT, aiohttp.ClientSession())
+    client = TiltPiClient(
+        host=TEST_HOST,
+        port=TEST_PORT,
+        session=mock_client_session,
+    )
     with pytest.raises(TiltPiConnectionTimeoutError):
         await client.get_hydrometers()
 
 
 @pytest.mark.asyncio
 @patch.object(aiohttp.ClientSession, "get")
-async def test_get_hydrometers_connection_error(mock_get):
+async def test_get_hydrometers_connection_error(mock_get, mock_client_session):
     """Test that a connection error is raised."""
     mock_get.side_effect = aiohttp.ClientError("Connection error occurred")
-    client = TiltPiClient(TEST_HOST, TEST_PORT, aiohttp.ClientSession())
+    client = TiltPiClient(
+        host=TEST_HOST,
+        port=TEST_PORT,
+        session=mock_client_session,
+    )
     with pytest.raises(TiltPiConnectionError):
         await client.get_hydrometers()
