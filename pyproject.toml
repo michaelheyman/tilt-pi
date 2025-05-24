@@ -5,7 +5,7 @@ packages = [
 
 [project]
 name = "tilt-pi"
-version = "0.1.0"
+version = "0.2.0"
 description = "A Python client for interacting with the Tilt Pi API"
 authors = [
     {name = "Michael Heyman",email = "michaelheyman@users.noreply.github.com"}
@@ -16,6 +16,17 @@ requires-python = ">=3.13"
 keywords = ["tilt-pi", "tilt", "hydrometer", "brewing", "fermentation"]
 dependencies = [
     "aiohttp (>=3.11.18,<4.0.0)"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Home Automation",
+    "Topic :: System :: Hardware",
+    "Typing :: Typed",
 ]
 
 [project.urls]
