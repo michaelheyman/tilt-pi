@@ -5,21 +5,10 @@ from typing import Final
 
 import aiohttp
 
+from tiltpi.errors import TiltPiConnectionError, TiltPiConnectionTimeoutError
 from tiltpi.model import TiltColor, TiltHydrometerData
 
 ENDPOINT_GET_ALL: Final = "/macid/all"
-
-
-class TiltPiError(Exception):
-    """Base exception for Tilt Pi."""
-
-
-class TiltPiConnectionError(TiltPiError):
-    """Error occurred while communicating with Tilt Pi."""
-
-
-class TiltPiConnectionTimeoutError(TiltPiConnectionError):
-    """Timeout occurred while communicating with Tilt Pi."""
 
 
 class TiltPiClient:
